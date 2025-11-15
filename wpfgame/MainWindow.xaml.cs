@@ -10,6 +10,8 @@ namespace WpfGame
 {
     public partial class MainWindow : Window
     {
+        enum Direction { Up, Down, Left, Right }
+        Direction lastDirection = Direction.Right;
         private double speed = 5;
         DispatcherTimer timer;
         public MainWindow()
@@ -53,16 +55,105 @@ namespace WpfGame
             double y = Canvas.GetTop(Player);
 
             if (e.Key == Key.Up)
+            {
+                lastDirection = Direction.Up;
                 y -= speed;
+            }
+                
             if (e.Key == Key.Down)
+            {
+                lastDirection = Direction.Down;
                 y += speed;
+            }
+                
             if (e.Key == Key.Left)
+            {
+                lastDirection = Direction.Left;
                 x -= speed;
+            }
+                
             if (e.Key == Key.Right)
+            {
+                lastDirection = Direction.Right;
                 x += speed;
+            }
+            
+            if (e.Key == Key.A)
+            {
+                Shoot();
+            }
 
             Canvas.SetLeft(Player, x);
             Canvas.SetTop(Player, y);
+        }
+
+        private void shoot(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed) Shoot();
+        }
+
+        private void Shoot()
+        {
+            Image fireball = new Image
+            {
+                Width = 30,
+                Height = 30,
+                Source = new BitmapImage(new Uri("pack://application:,,,/Images/fireball.png"))
+            };
+            double playerX = Canvas.GetLeft(Player);
+            double playerY = Canvas.GetTop(Player);
+            GameCanvas.Children.Add(fireball);
+            Direction fireballDirection = lastDirection;
+
+
+            if (fireballDirection == Direction.Up || fireballDirection == Direction.Right)
+            {
+                Canvas.SetLeft(fireball, playerX + 20);
+                Canvas.SetTop(fireball, playerY + 20);
+            }
+            else if (fireballDirection == Direction.Down)
+            {
+                Canvas.SetLeft(fireball, playerX + 40);
+                Canvas.SetTop(fireball, playerY + 20);
+            }
+            else
+            {
+                Canvas.SetLeft(fireball, playerX + 20);
+                Canvas.SetTop(fireball, playerY + 40);
+            }
+
+
+            DispatcherTimer t = new DispatcherTimer();
+            t.Interval = TimeSpan.FromMilliseconds(40);
+            t.Tick += (s, e) =>
+            {
+                double x = Canvas.GetLeft(fireball);
+                double y = Canvas.GetTop(fireball);
+                RotateTransform rotateTransform = new RotateTransform();
+
+                switch (fireballDirection)
+                {
+                    case Direction.Up: 
+                        Canvas.SetTop(fireball, y - 10);
+                        rotateTransform.Angle = -90;
+                        fireball.RenderTransform = rotateTransform;
+                        break;
+                    case Direction.Down: 
+                        Canvas.SetTop(fireball, y + 10);
+                        rotateTransform.Angle = 90;
+                        fireball.RenderTransform = rotateTransform;
+                        break;
+                    case Direction.Left: 
+                        Canvas.SetLeft(fireball, x - 10);
+                        rotateTransform.Angle = 180;
+                        fireball.RenderTransform = rotateTransform;
+                        break;
+                    case Direction.Right: 
+                        Canvas.SetLeft(fireball, x + 10); 
+                        break;
+                }
+            };
+            t.Start();
         }
     }
 }

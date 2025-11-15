@@ -4,7 +4,7 @@
         Title="Game" Height="450" Width="800"
         KeyDown="Window_KeyDown" WindowState="Maximized" x:Name="window">
 
-    <Canvas x:Name="GameCanvas" Background="White" Focusable="True" KeyDown="Window_KeyDown">
+    <Canvas x:Name="GameCanvas" Background="White" Focusable="True" KeyDown="Window_KeyDown" MouseDown="shoot">
         <Image x:Name="Player" Width="60" Height="60"/>
     </Canvas>
 </Window>
