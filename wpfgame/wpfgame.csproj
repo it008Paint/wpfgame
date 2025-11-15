@@ -8,4 +8,18 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Images\player.gif" />
+    <None Remove="Images\zombie.gif" />
+    <None Remove="Images\zombie.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\player.gif" />
+    <Resource Include="Images\zombie.gif" />
+    <Resource Include="Images\zombie.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
 </Project>
