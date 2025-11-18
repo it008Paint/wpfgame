@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -40,6 +41,7 @@ namespace WpfGame
             Image img = new Image();
             img.Width = 100;
             img.Height = 100;
+            img.Tag = "zombie";
 
             Uri imageUri = new Uri("pack://application:,,,/Images/zombie.gif");
             img.Source = new BitmapImage(imageUri);
@@ -98,7 +100,8 @@ namespace WpfGame
             {
                 Width = 30,
                 Height = 30,
-                Source = new BitmapImage(new Uri("pack://application:,,,/Images/fireball.png"))
+                Source = new BitmapImage(new Uri("pack://application:,,,/Images/fireball.png")),
+                Tag = "fireball"
             };
             double playerX = Canvas.GetLeft(Player);
             double playerY = Canvas.GetTop(Player);
@@ -152,6 +155,28 @@ namespace WpfGame
                         Canvas.SetLeft(fireball, x + 10); 
                         break;
                 }
+                Rect fireballRect = new Rect(Canvas.GetLeft(fireball), Canvas.GetTop(fireball), fireball.Width, fireball.Height);
+        var zombies = GameCanvas.Children.OfType<Image>()
+                      .Where(i => i.Tag != null && i.Tag.ToString() == "zombie")
+                      .ToList();
+
+        foreach (var zombie in zombies)
+        {
+           
+            Rect zombieRect = new Rect(Canvas.GetLeft(zombie), Canvas.GetTop(zombie), zombie.Width, zombie.Height);
+            if (fireballRect.IntersectsWith(zombieRect))
+            {
+                GameCanvas.Children.Remove(zombie);   
+                GameCanvas.Children.Remove(fireball);
+                t.Stop();                             
+                return;                              
+            }
+        }
+        if (x < 0 || x > GameCanvas.ActualWidth || y < 0 || y > GameCanvas.ActualHeight)
+        {
+            GameCanvas.Children.Remove(fireball);
+            t.Stop();
+        }
             };
             t.Start();
         }
